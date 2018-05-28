@@ -331,33 +331,63 @@ public class PieceListener implements MouseListener, Serializable {
 					//System.out.println(moveList.get(j)+" before: "+moveList2);
 					if(!tile[i].getTilePiece().getIsKing()) {
 						moveList2 = ordPiecesPossibleMoves(tile[moveList.get(j)].getTilePiece().getCol(),moveList2,moveList.get(j));
-					}else if(tile[i].getTilePiece().getIsKing() && (evilTileId.contains(i)&& turn ==BLACK)) {
-						moveList2.remove(0);
-						moveList2.remove(0);
-					}else if(tile[i].getTilePiece().getIsKing() && (evilTileId.contains(i)&& turn ==RED)) {
+					}else if(tile[i].getTilePiece().getIsKing() && (topTiles.contains(i))) {
 						if(moveList2.size() == 4) {
 							moveList2.remove(3);
 							moveList2.remove(2);
 						}
+						
+					}else if(tile[i].getTilePiece().getIsKing() && bottomTiles.contains(i)) {
+						if(moveList2.size() == 4) {
+							moveList2.remove(0);
+							moveList2.remove(0);
+						}
+					}else if(tile[i].getTilePiece().getIsKing() && leftTiles.contains(i)) {
+						if(moveList2.size() == 4) {
+							moveList2.remove(3);
+							moveList2.remove(2);
+						}
+					}else if(tile[i].getTilePiece().getIsKing() && rightTiles.contains(i)) {
+						if(moveList2.size() == 4) {
+							moveList2.remove(0);
+							moveList2.remove(0);
+						}
 					}
 					
-					//System.out.println(moveList.get(j)+" j: "+moveList2);
+					System.out.println(moveList.get(j)+" j: "+moveList2);
 					
 					if(!(moveList2.size() == 1) ) {
-						//System.out.println("yo");
+						System.out.println("yo");
 						if(!evilTileId.contains(moveList.get(j))) {
-							//System.out.println("yo1");
-							if(!tile[moveList2.get(j)].isOccupied() && moveList.size() > 1) {
-								//System.out.println("yo2");
+							System.out.println("yo1");
+							if(!tile[moveList2.get(j)].isOccupied() && moveList.size() > 2) {
+								System.out.println("yo2");
 								eatList.add(new Eat(i, moveList.get(j), moveList2.get(j)));
-							}else if(moveList.size() == 1)  {
-							//	System.out.println("yo3");
-								if(leftTiles.contains((Integer)i) && !tile[moveList2.get(j+1)].isOccupied()) {
-									//System.out.println("yo4");
+							}else if(!tile[moveList2.get(j)].isOccupied()&&moveList.size() ==2) {
+								//new update
+								System.out.println("all too well");
+								if(j == 0 && leftTiles.contains((Integer)i)) {
+									System.out.println("yo6");
 									eatList.add(new Eat(i, moveList.get(j), moveList2.get(j+1)));
-								}else if(rightTiles.contains((Integer)i) && !tile[moveList2.get(j)].isOccupied()) {
-									//System.out.println("yo5");
+								}else if(j==1 && rightTiles.contains((Integer)i)){
+									System.out.println("yo8");
+									eatList.add(new Eat(i, moveList.get(j), moveList2.get(j-1)));
+								}else {
+									System.out.println("yo7");
 									eatList.add(new Eat(i, moveList.get(j), moveList2.get(j)));
+								}
+								//end
+							} else if(moveList.size() == 1 )  {
+								System.out.println("yo3");
+								if(leftTiles.contains((Integer)i)&&!tile[moveList2.get(j+1)].isOccupied()) {
+									System.out.println("yo4");
+									eatList.add(new Eat(i, moveList.get(j), moveList2.get(j+1)));
+								}else if(rightTiles.contains((Integer)i) && !tile[moveList2.get(j)].isOccupied() ) {
+									System.out.println("yo5");
+									eatList.add(new Eat(i, moveList.get(j), moveList2.get(j)));
+								}else {
+									System.out.println("CHECK ME OUT");
+									//System.exit(0);
 								}
 								
 							}
@@ -495,8 +525,11 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 						
 						System.out.println("//////////Black King COunt "+ blackKingCount+ " Red King Count "+ redKingCount);
 						tile[i].getAdjTiles().remove((Integer)i);
+						//new update
+						if(!tile[i].getAdjTiles().contains((Integer)i))
+							removeAdjTile(tile[i].getAdjTiles());
+						//end
 						
-						removeAdjTile(tile[i].getAdjTiles());
 						int pre = tile[i].getPreTile();
 						
 						boolean isKing = removePredecessorTile(pre);
@@ -512,7 +545,7 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 							changeTurns();
 							enableMouseListener();
 							flagTurn =false;
-						}else {flagTurn = true;}
+						}else {flagTurn = true;canDoubleEat = true;}
 					// end
 						isChangeTurns = compulsoryEat(canDoubleEat, eater);
 						
@@ -522,6 +555,7 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 						if(isChangeTurns && flagTurn) {
 							changeTurns();
 							enableMouseListener();
+							canDoubleEat = false;
 							isChangeTurns = compulsoryEat(canDoubleEat, eater);
 						}
 						// end
