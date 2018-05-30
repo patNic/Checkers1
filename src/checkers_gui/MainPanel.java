@@ -29,6 +29,7 @@ public class MainPanel extends JPanel implements Runnable{
 	private Receiver myReceiver;
 	private Sender mySender;
 	private int my_turn;
+	private Dialog dialog;
 	
 	public MainPanel(String player1, String player2, Receiver receive, Sender sender,int turn) {
 		setLayout(null);
@@ -157,6 +158,8 @@ public class MainPanel extends JPanel implements Runnable{
 		eatenRedPieces = new JLabel[12];
 		eatenBlackPieces = new JLabel[12];
 		
+		dialog = new Dialog();
+				
 		int x = 20;
 		ImageIcon redIcon = new ImageIcon("src/images/red.png");
 		ImageIcon blackIcon = new ImageIcon("src/images/black.png");
@@ -221,7 +224,16 @@ public class MainPanel extends JPanel implements Runnable{
 				new Dialog().exit();
 			}
 			else if(obj == settings){
-				new Dialog().settings();
+				String turn = dialog.getTurn();
+				
+				if(turn.equals("ON")) {
+					dialog.setTurn("OFF");
+					dialog.settings();
+				}
+				else if(turn.equals("OFF")){
+					dialog.setTurn("ON");
+					dialog.settings();
+				}
 			}
 			else if(obj == newgame){
 				

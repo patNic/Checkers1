@@ -205,7 +205,10 @@ public class PieceListener implements MouseListener, Serializable {
 		tile[tileId].getTilePiece().setEnabled(false);
 		tile[tileId].getTilePiece().removeMouseListener(this);
 		
-		return tile[tileId].getTilePiece().getIsKing();
+		boolean isKing = tile[tileId].getTilePiece().getIsKing();
+		tile[tileId].getTilePiece().setIsKing(false);
+		
+		return isKing;
 	}
 	
 	private void turnToRealPiece(int tileId, boolean isKing) {

@@ -1,3 +1,4 @@
+package checkers_main;
 //import javax.swing.JFrame;
 
 import java.io.IOException;
@@ -13,6 +14,8 @@ import checkers_gui.Launcher;
 //import checkers_gui.MainPanel;
 
 public class Main {
+	public static AudioInputStream audioInputStream;
+    public static Clip clip;
 	public static void main(String[] args) {
 		Launcher l = new Launcher();
 		playAudio(l);
@@ -29,8 +32,8 @@ public class Main {
 		 try {
 	         URL url = launch.getClass().getClassLoader().getResource("ot_soundtrack.wav");
 	         System.out.println(url);
-	         AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
-	         Clip clip = AudioSystem.getClip();
+	         audioInputStream = AudioSystem.getAudioInputStream(url);
+	         clip = AudioSystem.getClip();
 	         clip.open(audioInputStream);
 	         clip.loop(Clip.LOOP_CONTINUOUSLY);
 	      } catch (UnsupportedAudioFileException e) {

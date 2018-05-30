@@ -1,5 +1,6 @@
 package checkers_gui;
 import java.awt.*;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -9,13 +10,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import checkers_main.Main;
+
 public class Dialog extends JDialog{
 	
 	private static final long serialVersionUID = 1L;
-	private JLabel exit, exitQuestion, yes, no;
+	private JLabel exit, exitQuestion, yes, no, settingsQuestion, settings;
 	private JPanel panel;
 	private Image board_image;
 	private MouseListener mouseListener;
+	private String turn = "ON";
+	private boolean isExit;
 	public Dialog(){
 		initComponents();
 		
@@ -66,6 +71,7 @@ public class Dialog extends JDialog{
 		panel.add(no);
 	}
 	public void exit(){
+		isExit = true;
 		exit = new JLabel("EXIT CONFIRMATION");
 		exit.setBounds(90, 40, 600, 50);
 		exit.setFont(new Font("Helvetica", Font.BOLD+Font.ITALIC, 50));
@@ -81,6 +87,22 @@ public class Dialog extends JDialog{
 		setVisible(true);
 	}
 	public void settings(){
+		panel.removeAll();
+		addComponent();
+		
+		isExit = false;
+		settings = new JLabel("TURN " +turn +  " BACKGROUND MUSIC", JLabel.CENTER);
+		settings.setBounds(0, 40, 700, 50);
+		settings.setFont(new Font("Helvetica", Font.BOLD+Font.ITALIC, 40));
+		settings.setForeground(Color.WHITE);
+		
+		settingsQuestion = new JLabel("Are you sure you want to turn "+ turn +" background music?", JLabel.CENTER);
+		settingsQuestion.setBounds(0, 125, 700, 50);
+		settingsQuestion.setFont(new Font("Helvetica", Font.BOLD, 25));
+		settingsQuestion.setForeground(Color.WHITE);
+		
+		panel.add(settings);
+		panel.add(settingsQuestion);
 		setVisible(true);
 	}
 	public Dialog outer(){
@@ -123,13 +145,39 @@ public class Dialog extends JDialog{
 			Object obj = e.getSource();
 			
 			if(obj == yes){
-				System.exit(0);
+				if(isExit)
+					System.exit(0);
+				else {
+					if(turn.equals("OFF")) {
+						System.out.println("I came at stop");
+						Main.clip.stop();
+					}
+					else if(turn.equals("ON")) {
+						System.out.println("I came at start");
+						Main.clip.start();
+					}
+				}
+				outer().dispose();
 			}
 			else if(obj == no){
+				if(!isExit) {
+					if(turn.equals("OFF")) {
+						turn = "ON";
+					}
+					else if(turn.equals("ON")) {
+						turn = "OFF";
+					}
+				}
 				outer().dispose();
 			}
 			repaint();
 			revalidate();
 		}
+	}
+	public String getTurn() {
+		return turn;
+	}
+	public void setTurn(String t) {
+		turn = t;
 	}
 }
