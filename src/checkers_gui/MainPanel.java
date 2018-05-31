@@ -18,18 +18,20 @@ public class MainPanel extends JPanel implements Runnable{
 	public static Board board;
 	private JPanel sidePanel1;
 	private JPanel sidePanel2;
-	public static JLabel turn;
-	@SuppressWarnings("unused")
-	private JLabel settings, exit, player1, player2, player1Eat, player2Eat, capt_player1, capt_player2,
-		player1Score, player2Score, scoreLabel1, scoreLabel2, nameLabel1, nameLabel2, playerName1, playerName2;
+	
+	private JLabel settings, exit, player1, player2, player1Eat, player2Eat, capt_player1, capt_player2,turn, mainmenu,
+		 nameLabel1, nameLabel2, playerName1, playerName2;
 	private JLabel[] eatenRedPieces, eatenBlackPieces;
+	
 	private MouseListener mouseListener;
-	private JLabel newgame;
-	private String player1Name, player2Name;
 	private Receiver myReceiver;
 	private Sender mySender;
-	private int my_turn;
 	private Dialog dialog;
+	
+	private int my_turn;
+	
+	public static JLabel whoseTurn;
+	public static String player1Name, player2Name;
 	
 	public MainPanel(String player1, String player2, Receiver receive, Sender sender,int turn) {
 		setLayout(null);
@@ -54,12 +56,18 @@ public class MainPanel extends JPanel implements Runnable{
 	}
 	public void initComponents()
 	{
-		turn = new JLabel("Turn", SwingConstants.CENTER);
-		turn.setBounds(0, 30, 200, 130);
-		turn.setForeground(Color.RED);
-		turn.setFont(new Font("Helvetica", Font.BOLD, 25));
+		turn = new JLabel("TURN", SwingConstants.CENTER);
+		turn.setBounds(10, 25, 180, 65);
+		turn.setForeground(new Color(139,69,19));
+		turn.setFont(new Font("Helvetica", Font.BOLD, 35));
+		turn.setBackground(new Color(255, 255, 255, 125));
+		turn.setOpaque(true);
 		
-		
+		whoseTurn = new JLabel(player1Name, SwingConstants.CENTER);
+		whoseTurn.setBounds(10, 90, 180, 50);
+		whoseTurn.setForeground(Color.RED);
+		whoseTurn.setFont(new Font("Helvetica", Font.BOLD, 25));
+	
 		board = new Board(myReceiver, mySender, my_turn);
 		board.setBounds(200, 2, 600, 697);
 		
@@ -151,9 +159,9 @@ public class MainPanel extends JPanel implements Runnable{
 		playerName2.setBounds(0,105, 150, 35);
 		playerName2.setFont(new Font("Helvetica", Font.BOLD, 30));
 		
-		newgame = new JLabel(new ImageIcon("src/images/newgame2.png"));
-		newgame.setBounds(785, 30, 230, 130);
-		newgame.addMouseListener(mouseListener);
+		mainmenu = new JLabel(new ImageIcon("src/images/mainmenu.png"));
+		mainmenu.setBounds(785, 30, 230, 130);
+		mainmenu.addMouseListener(mouseListener);
 		
 		eatenRedPieces = new JLabel[12];
 		eatenBlackPieces = new JLabel[12];
@@ -200,8 +208,9 @@ public class MainPanel extends JPanel implements Runnable{
 		//sidePanel2.add(scoreLabel2);
 		//sidePanel2.add(player2Score);
 		//sidePanel2.add(player2Name);
-		add(newgame);
+		add(mainmenu);
 		add(turn);
+		add(whoseTurn);
 		
 		for(int i =  0; i < 12; i++)
 		{
@@ -235,8 +244,8 @@ public class MainPanel extends JPanel implements Runnable{
 					dialog.settings();
 				}
 			}
-			else if(obj == newgame){
-				
+			else if(obj == mainmenu){
+			     new Dialog().mainMenu(mySender);
 			}
 		}
 		public void mouseEntered(MouseEvent e){
@@ -248,8 +257,8 @@ public class MainPanel extends JPanel implements Runnable{
 			else if(obj == settings){
 				settings.setIcon(settingsIcon2);
 			}
-			else if(obj == newgame){
-				newgame.setIcon(new ImageIcon("src/images/newgame1.png"));
+			else if(obj == mainmenu){
+				mainmenu.setIcon(new ImageIcon("src/images/mainmenu1.png"));
 			}
 			repaint();
 			revalidate();
@@ -263,8 +272,8 @@ public class MainPanel extends JPanel implements Runnable{
 			else if(obj == settings){
 				settings.setIcon(settingsIcon1);
 			}
-			else if(obj == newgame){
-				newgame.setIcon(new ImageIcon("src/images/newgame2.png"));
+			else if(obj == mainmenu){
+				mainmenu.setIcon(new ImageIcon("src/images/mainmenu.png"));
 			}
 			repaint();
 			revalidate();
@@ -280,7 +289,6 @@ public class MainPanel extends JPanel implements Runnable{
 				System.out.print("");
 			}
 			else{
-				System.out.println(" ---- Somebody was eaten ------ ");
 				redcount = 12 - PieceListener.redPiecesCount;
 				blackcount = 12 - PieceListener.blackPiecesCount;
 				
@@ -315,7 +323,6 @@ public class MainPanel extends JPanel implements Runnable{
 			
 			if(obj != null) {
 				if(obj.toString().equals("I just started")) {
-					System.out.println("We've both started");
 					break;
 				}
 				

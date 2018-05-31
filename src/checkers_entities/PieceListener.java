@@ -21,9 +21,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import checkers_gui.Board;
+import checkers_gui.Dialog;
 import checkers_gui.Launcher;
 import checkers_gui.MainPanel;
 import checkers_gui.Winner;
+import checkers_main.Main;
 import network.Receiver;
 import network.Sender;
 @SuppressWarnings("unused")
@@ -46,8 +48,7 @@ public class PieceListener implements MouseListener, Serializable {
 	private static final int TRANSPARENT_BLACKICON = 3;
 	public static int redPiecesCount = 12;
 	public static int blackPiecesCount = 12;
-	public static int blackKingCount = 4;
-	public static int redKingCount = 4;
+	
 	public static ImageIcon redLatestEatIcon;
 	public static ImageIcon blackLatestEatIcon;
 	private static boolean isChangeTurns = true;
@@ -62,6 +63,7 @@ public class PieceListener implements MouseListener, Serializable {
 	private int playerNum;
 	private boolean isFakeClick;
 	private Cursor myCursor;
+	private int finalMove;
 	
 	public PieceListener(Receiver r, Sender s, int turn1) {
 		this.tile = Board.tile;
@@ -75,9 +77,7 @@ public class PieceListener implements MouseListener, Serializable {
 		else
 			playerNum = RED;
 		
-		MainPanel.turn.setText("TURN : RED");
-		
-		System.out.println("My turn "+ my_turn);
+		MainPanel.whoseTurn.setText(MainPanel.player1Name);
 		init();
 	}
 	
@@ -183,6 +183,7 @@ public class PieceListener implements MouseListener, Serializable {
 			tile[elem].setPreTile(-1);
 		
 			tile[elem].getTilePiece().setPieceVisibility(false);
+			
 			tile[elem].getTilePiece().setVisible(false);
 			tile[elem].getTilePiece().setEnabled(false);
 			tile[elem].getTilePiece().removeMouseListener(this);
@@ -220,7 +221,6 @@ public class PieceListener implements MouseListener, Serializable {
 		tile[tileId].getTilePiece().setTileEaten(-1);
 		
 		if(isKing) {
-			System.out.println("at turn to real piece King "+tileId);
 			if(tile[tileId].getTilePiece().getCol() == 0){
 				tile[tileId].getTilePiece().setPieceIcon(new ImageIcon("src/images/redKing.png"));
 			}
@@ -239,18 +239,16 @@ public class PieceListener implements MouseListener, Serializable {
 				if((tileId == tileIdKing.get(i)) && (tileIdKing.get(i) <4) && (col == REDICON)) {
 					tile[tileId].getTilePiece().setIsKing(true);
 					king = true;
-					redKingCount++;
+
 				}else if((tileId == tileIdKing.get(i)) && (tileIdKing.get(i) >19 && tileIdKing.get(i) < 24) && (col == BLACKICON)) {
 					tile[tileId].getTilePiece().setIsKing(true);
 					king = true;
-					blackKingCount++;
 				}
 			}
 			
 		}
 		
 		if(king) {
-			System.out.println("King "+tileId);
 			if(tile[tileId].getTilePiece().getCol() == 0){
 				tile[tileId].getTilePiece().setPieceIcon(new ImageIcon("src/images/redKing.png"));
 			}
@@ -261,43 +259,17 @@ public class PieceListener implements MouseListener, Serializable {
 			tile[tileId].getTilePiece().setIsKing(isKing);
 		}
 	}
-	/*private void determineIfKing(int tileId, boolean isKing, int col) {
-		boolean king = false;
-		if(!tile[tileId].getTilePiece().getIsKing()) {
-			for(int i = 0;i<tileIdKing.size();i++) {
-				if((tileId == tileIdKing.get(i)) && (tileIdKing.get(i) <4) && (col == REDICON)) {
-					tile[tileId].getTilePiece().setIsKing(true);
-					king = true;
-				}else if((tileId == tileIdKing.get(i)) && (tileIdKing.get(i) >19 && tileIdKing.get(i) < 24) && (col == BLACKICON)) {
-					tile[tileId].getTilePiece().setIsKing(true);
-					king = true;
-				}
-			}
-			
-		}
-		
-		if(king) {
-			System.out.println("King "+tileId);
-			if(tile[tileId].getTilePiece().getCol() == 0){
-				tile[tileId].getTilePiece().setPieceIcon(new ImageIcon("src/images/redKing.png"));
-			}
-			else if(tile[tileId].getTilePiece().getCol() == 1){
-				tile[tileId].getTilePiece().setPieceIcon(new ImageIcon("src/images/blackKing.png"));
-			}
-		}else {
-			tile[tileId].getTilePiece().setIsKing(isKing);
-		}
-	}*/
 	private void changeTurns() {
+			MainPanel.whoseTurn.setBackground(new Color(255, 255, 255, 125));
 			if(turn == RED) {
 				turn = BLACK;
-				MainPanel.turn.setForeground(Color.BLACK);
-				MainPanel.turn.setText("TURN : BLACK");
+				MainPanel.whoseTurn.setForeground(Color.WHITE);
+				MainPanel.whoseTurn.setText(MainPanel.player2Name);
 			}
 			else {
 				turn = RED;
-				MainPanel.turn.setForeground(Color.RED);
-				MainPanel.turn.setText("TURN : RED");
+				MainPanel.whoseTurn.setForeground(Color.RED);
+				MainPanel.whoseTurn.setText(MainPanel.player1Name);
 			}
 	}
 	private void enableMouseListener() {
@@ -326,12 +298,10 @@ public class PieceListener implements MouseListener, Serializable {
 		ArrayList<Integer> moveList = possibleMoves.get(i);
 		if(!tile[i].getTilePiece().getIsKing())
 			moveList = ordPiecesPossibleMoves(tile[i].getTilePiece().getCol(),moveList,i);
-		//System.out.println(i+" i: "+moveList);
 		
 		for(int j = 0;j<moveList.size();j++) {
 			if(tile[moveList.get(j)].getTilePiece().getCol() == col && tile[moveList.get(j)].isOccupied()) {
 					ArrayList<Integer> moveList2 = possibleMoves.get(moveList.get(j));
-					//System.out.println(moveList.get(j)+" before: "+moveList2);
 					if(!tile[i].getTilePiece().getIsKing()) {
 						moveList2 = ordPiecesPossibleMoves(tile[moveList.get(j)].getTilePiece().getCol(),moveList2,moveList.get(j));
 					}else if(tile[i].getTilePiece().getIsKing() && (topTiles.contains(i))) {
@@ -357,36 +327,23 @@ public class PieceListener implements MouseListener, Serializable {
 						}
 					}
 					
-					System.out.println(moveList.get(j)+" j: "+moveList2);
-					
 					if(!(moveList2.size() == 1) ) {
-						System.out.println("yo");
 						if(!evilTileId.contains(moveList.get(j))) {
-							System.out.println("yo1");
 							if(!tile[moveList2.get(j)].isOccupied() && moveList.size() > 2) {
-								System.out.println("yo2");
 								eatList.add(new Eat(i, moveList.get(j), moveList2.get(j)));
 							}else if(!tile[moveList2.get(j)].isOccupied()&&moveList.size() ==2) {
-								//new update
-								System.out.println("all too well");
 								if(j == 0 && leftTiles.contains((Integer)i)) {
-									System.out.println("yo6");
 									eatList.add(new Eat(i, moveList.get(j), moveList2.get(j+1)));
 								}else if(j==1 && rightTiles.contains((Integer)i)){
-									System.out.println("yo8");
 									eatList.add(new Eat(i, moveList.get(j), moveList2.get(j-1)));
 								}else {
-									System.out.println("yo7");
 									eatList.add(new Eat(i, moveList.get(j), moveList2.get(j)));
 								}
 								//end
 							} else if(moveList.size() == 1 )  {
-								System.out.println("yo3");
 								if(leftTiles.contains((Integer)i)&&!tile[moveList2.get(j+1)].isOccupied()) {
-									System.out.println("yo4");
 									eatList.add(new Eat(i, moveList.get(j), moveList2.get(j+1)));
 								}else if(rightTiles.contains((Integer)i) && !tile[moveList2.get(j)].isOccupied() ) {
-									System.out.println("yo5");
 									eatList.add(new Eat(i, moveList.get(j), moveList2.get(j)));
 								}else {
 									System.out.println("CHECK ME OUT");
@@ -445,8 +402,7 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 		        ArrayList<Eat> eatList = eatArrList.get(a);
 		        for(int b = 0;b<eatList.size();b++) {
 		        	Eat eat = eatList.get(b);
-		        	System.out.println(eat.getEater() +"can jump to "+eat.getJumpTo());
-		    		int col = tile[eat.getEater()].getTilePiece().getCol() == BLACKICON ? TRANSPARENT_BLACKICON : TRANSPARENT_REDICON;
+		        	int col = tile[eat.getEater()].getTilePiece().getCol() == BLACKICON ? TRANSPARENT_BLACKICON : TRANSPARENT_REDICON;
 		    		ImageIcon icon = tile[eat.getEater()].getTilePiece().getIcon(col);
 		    		
 		    			
@@ -455,6 +411,7 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 		    			tile[elem].setPreTile(eat.getEater());
 		    			tile[elem].getTilePiece().setCol(col);
 		    			tile[elem].getTilePiece().setPieceIcon(icon);
+		    			
 		    			tile[elem].getTilePiece().setPieceVisibility(true);
 		    			tile[elem].getTilePiece().setVisible(true);
 		    			tile[elem].getTilePiece().setEnabled(true);
@@ -487,12 +444,24 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 	}
 	
 	private void declareWinner() {
+		int blackKingCount = 0;
+		int redKingCount = 0;
+		
+		for(int i = 0; i < 32; i++) {
+			Piece p = tile[i].getTilePiece();
+			if(p.getIsKing()) {
+				if(p.getCol() == 0)
+					redKingCount++;
+				else if(p.getCol() ==1)
+					blackKingCount++;
+			}
+		}
 		if(blackPiecesCount == 0 || blackKingCount == 0) {
-			System.out.println("RED WINS!");
 			new Winner("RED");
+			mySender.send(new Integer(finalMove));
 		}else if(redPiecesCount == 0 || redKingCount == 0) {
-			System.out.println("BLACK WINS!");
 			new Winner("BLACK");
+			mySender.send(new Integer(finalMove));
 		}
 	}
 	@Override
@@ -509,24 +478,14 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 							removePredecessorTile(tile[i].getTilePiece().getTileEaten());
 							eater = i;
 							if(turn == BLACK) {
-								latestRed = tile[tile[i].getTilePiece().getTileEaten()].getTilePiece().getIsKing();
-								
-								if(latestRed)
-									redKingCount--;
-								
 								redPiecesCount--;
 							}else {
-								latestBlack = tile[tile[i].getTilePiece().getTileEaten()].getTilePiece().getIsKing();
-								
-								if(latestBlack)
-									blackKingCount--;
-								
 								blackPiecesCount--;
 							}
+							finalMove = i;
 							declareWinner();
 						}
 						
-						System.out.println("//////////Black King COunt "+ blackKingCount+ " Red King Count "+ redKingCount);
 						tile[i].getAdjTiles().remove((Integer)i);
 						//new update
 						if(!tile[i].getAdjTiles().contains((Integer)i))
@@ -538,12 +497,15 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 						boolean isKing = removePredecessorTile(pre);
 						
 						if(tile[pre].getTilePiece().getIsKing())
+						{
 							isKing = true;
+						}
 						
 						turnToRealPiece(i, isKing);
 						tile[i].setPreTile(-1);
 						pre = tile[i].getPreTile();
-					// delete this part right here to preserve last version	
+						
+						// delete this part right here to preserve last version	
 						if(isChangeTurns) {
 							changeTurns();
 							enableMouseListener();
@@ -552,8 +514,6 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 					// end
 						isChangeTurns = compulsoryEat(canDoubleEat, eater);
 						
-						
-						System.out.println("changeturns = "+isChangeTurns);
 						// delete this part right here to preserve last version	
 						if(isChangeTurns && flagTurn) {
 							changeTurns();
@@ -563,11 +523,7 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 						}
 						// end
 					}
-				
 						mySender.send(new Integer(i));
-						System.out.println("I just sent an index " + i);
-						//MainPanel.board.setCursor(Cursor.getDefaultCursor());
-					
 				}
 			}
 		}
@@ -687,8 +643,6 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 					
 					if(obj!=null) {
 						if(obj instanceof Integer) {
-							System.out.println("I received an index "+ Integer.parseInt(obj.toString()));
-							
 							if(playerNum == RED && turn == BLACK) {
 								for(int i = 0;i<32;i++) {
 									if(tile[i].getTilePiece().getCol() == BLACKICON) {
@@ -714,6 +668,11 @@ private	boolean  compulsoryEat(boolean secondWave, int anotherTile) {
 								ml.mouseClicked(mClick);
 								myReceiver.setObjectNull();
 						    }
+						}
+						else if(obj instanceof String) {
+							if(obj.toString().equals("Back at main menu")) {
+								new Dialog().gotBackToMainMenu();
+							}
 						}
 						else {
 							System.out.println("Not an instance of integer");

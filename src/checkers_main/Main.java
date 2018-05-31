@@ -11,22 +11,15 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import checkers_gui.Launcher;
-//import checkers_gui.MainPanel;
+
 
 public class Main {
 	public static AudioInputStream audioInputStream;
     public static Clip clip;
+    public static Launcher l;
 	public static void main(String[] args) {
-		Launcher l = new Launcher();
+		l = new Launcher();
 		playAudio(l);
-		/*JFrame f = new JFrame();
-		MainPanel b = new MainPanel();
-		f.add(b);
-		f.setSize(1020,730);
-		f.setVisible(true);
-		f.setResizable(false);
-		f.setLocationRelativeTo(null);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);*/
 	}
 	public static void playAudio(Launcher launch) {
 		 try {

@@ -45,6 +45,7 @@ public class Launcher extends JDialog implements MouseListener, ActionListener{
 		
 		public static String playerName;
 		public static String opponent;
+		public static JFrame f;
 		
 		private Receiver myReceiver;
 		private Sender mySender;
@@ -83,7 +84,7 @@ public class Launcher extends JDialog implements MouseListener, ActionListener{
 		public void gameProper(String player1, String player2, Receiver r, Sender s, int turn) {
 			this.dispose();
 			
-			JFrame f = new JFrame();
+			f = new JFrame();
 			MainPanel b = new MainPanel(player1, player2, r, s, turn);
 			f.add(b);
 			f.setSize(1020,730);
@@ -291,8 +292,7 @@ public class Launcher extends JDialog implements MouseListener, ActionListener{
 				if(combo.getSelectedItem().toString().equals("CLIENT")) {
 					try {
 						clientSocket = new Socket(playWithTF.getText(), myPort);
-						System.out.println("Successfully connected to server");
-						
+					
 						statusTF.setText("Connected");
 						myReceiver = new Receiver(clientSocket);
 						mySender = new Sender(clientSocket);
@@ -390,8 +390,6 @@ public class Launcher extends JDialog implements MouseListener, ActionListener{
 							             }
 							         }
 					              
-					              System.out.println("Somebody connected to me "+ clientSocket.getInetAddress());
-					              
 					              myReceiver = new Receiver(clientSocket);
 					              mySender = new Sender(clientSocket);
 					               
@@ -420,7 +418,6 @@ public class Launcher extends JDialog implements MouseListener, ActionListener{
 			if(obj != null) {
 				if(obj instanceof String && obj.toString().startsWith("NAME_")) {
 					opponent = obj.toString().substring(5);
-					System.out.println("My Opponent name is "+ opponent);
 					statusTF.setText("To play with "+opponent);
 					
 					try {

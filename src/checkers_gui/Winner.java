@@ -13,6 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import checkers_main.Main;
+
 public class Winner extends JDialog implements MouseListener{
 	/**
 	 * 
@@ -76,13 +78,14 @@ public class Winner extends JDialog implements MouseListener{
 			g.drawImage(board_image, 0, 0, getWidth(), getHeight(), this);
 		}
 	}
-	public static void main(String[] args) {
-		new Winner("BLACK");
-	}
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		if(arg0.getSource() == x_Button)
+		{
 			this.dispose();
+			Launcher.f.dispose();
+			Main.l = new Launcher();
+		}
 	}
 	@Override
 	public void mouseEntered(MouseEvent arg0) {

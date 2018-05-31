@@ -11,16 +11,19 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import checkers_main.Main;
+import network.Sender;
 
 public class Dialog extends JDialog{
 	
 	private static final long serialVersionUID = 1L;
-	private JLabel exit, exitQuestion, yes, no, settingsQuestion, settings;
+	private JLabel exit, exitQuestion, yes, no, settingsQuestion, settings, ok;
 	private JPanel panel;
 	private Image board_image;
 	private MouseListener mouseListener;
 	private String turn = "ON";
-	private boolean isExit;
+	private boolean isExit, isMenu;
+	
+	private Sender sender;
 	public Dialog(){
 		initComponents();
 		
@@ -64,6 +67,14 @@ public class Dialog extends JDialog{
 		no.setBackground(new Color(0, 0, 0, 100));
 		no.setOpaque(true);
 		no.addMouseListener(mouseListener);
+		
+		ok = new JLabel("OKAY",SwingConstants.CENTER);
+		ok.setBounds(250, 240, 200, 50);
+		ok.setFont(new Font("Helvetica", Font.BOLD, 30));
+		ok.setForeground(Color.WHITE);
+		ok.setBackground(new Color(0, 0, 0, 100));
+		ok.setOpaque(true);
+		ok.addMouseListener(mouseListener);
 	}
 	public void addComponent(){
 		add(panel);
@@ -122,6 +133,11 @@ public class Dialog extends JDialog{
 				no.setForeground(Color.RED);
 				no.setOpaque(true);
 			}
+			else if(obj == ok){
+				ok.setFont(new Font("Helvetica", Font.BOLD, 35));
+				ok.setForeground(Color.RED);
+				ok.setOpaque(true);
+			}
 			repaint();
 			revalidate();
 		}
@@ -138,6 +154,11 @@ public class Dialog extends JDialog{
 				no.setForeground(Color.WHITE);
 				no.setOpaque(true);
 			}
+			else if(obj == ok) {
+				ok.setFont(new Font("Helvetica", Font.BOLD, 30));
+				ok.setForeground(Color.WHITE);
+				ok.setOpaque(true);
+			}
 			repaint();
 			revalidate();
 		}
@@ -148,31 +169,80 @@ public class Dialog extends JDialog{
 				if(isExit)
 					System.exit(0);
 				else {
-					if(turn.equals("OFF")) {
-						System.out.println("I came at stop");
-						Main.clip.stop();
+					if(isMenu) {
+						Launcher.f.dispose();
+						Main.l = new Launcher();
+						sender.send("Back at main menu");
 					}
-					else if(turn.equals("ON")) {
-						System.out.println("I came at start");
-						Main.clip.start();
+					else {
+						if(turn.equals("OFF")) {
+							Main.clip.stop();
+						}
+						else if(turn.equals("ON")) {
+							Main.clip.start();
+						}
 					}
 				}
 				outer().dispose();
 			}
 			else if(obj == no){
 				if(!isExit) {
-					if(turn.equals("OFF")) {
-						turn = "ON";
-					}
-					else if(turn.equals("ON")) {
-						turn = "OFF";
+					if(!isMenu) {
+						if(turn.equals("OFF")) {
+							turn = "ON";
+						}
+						else if(turn.equals("ON")) {
+							turn = "OFF";
+						}
 					}
 				}
 				outer().dispose();
 			}
+			else if(obj == ok) {
+				Launcher.f.dispose();
+				Main.l = new Launcher();
+			}
 			repaint();
 			revalidate();
 		}
+	}
+	public void mainMenu(Sender send) {
+		sender = send;
+		
+		isExit = false;
+		isMenu = true;
+		exit = new JLabel("BACK TO MAIN MENU");
+		exit.setBounds(90, 40, 600, 50);
+		exit.setFont(new Font("Helvetica", Font.BOLD+Font.ITALIC, 50));
+		exit.setForeground(Color.WHITE);
+		
+		exitQuestion = new JLabel("Are you sure you want to go back to main menu?");
+		exitQuestion.setBounds(60, 125, 600, 50);
+		exitQuestion.setFont(new Font("Helvetica", Font.BOLD, 25));
+		exitQuestion.setForeground(Color.WHITE);
+		
+		panel.add(exit);
+		panel.add(exitQuestion);
+		setVisible(true);
+	}
+	public void gotBackToMainMenu() {
+	
+		panel.removeAll();
+		exit = new JLabel("       YOUR OPPONENT", JLabel.CENTER);
+		exit.setBounds(0, 60, 600, 50);
+		exit.setFont(new Font("Helvetica", Font.BOLD+Font.ITALIC, 50));
+		exit.setForeground(Color.WHITE);
+		
+		exitQuestion = new JLabel("        EXITED THE GAME!", JLabel.CENTER);
+		exitQuestion.setBounds(0, 145, 600, 50);
+		exitQuestion.setFont(new Font("Helvetica", Font.BOLD,50));
+		exitQuestion.setForeground(Color.WHITE);
+		
+		panel.add(exit);
+		panel.add(exitQuestion);
+		panel.add(ok);
+		this.setAlwaysOnTop(true);
+		setVisible(true);
 	}
 	public String getTurn() {
 		return turn;
@@ -180,4 +250,8 @@ public class Dialog extends JDialog{
 	public void setTurn(String t) {
 		turn = t;
 	}
+	
+	/*public static void main(String[] args) {
+		new Dialog().gotBackToMainMenu();
+	}*/
 }

@@ -81,7 +81,6 @@ public class Piece extends JLabel{
 			this.setIcon(redIcon3);
 			return redIcon3;
 		default:
-			System.out.println("invalid col value");
 			return null;
 		}
 	}
@@ -137,13 +136,11 @@ public class Piece extends JLabel{
 			return redIcon3;
 		case TRANSPARENT_BLACKICON:
 			if(this.isKing){
-				return blackKing;
+				return blackKing3;
 			}
 			return blackIcon3;
 		default:
-			System.out.println("invalid col value");
 			return null;
-		
 		}	
 	}
 	
