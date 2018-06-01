@@ -315,15 +315,18 @@ public class PieceListener implements MouseListener, Serializable {
 							moveList2.remove(0);
 							moveList2.remove(0);
 						}
-					}else if(tile[i].getTilePiece().getIsKing() && leftTiles.contains(i)) {
+					}else if(tile[i].getTilePiece().getIsKing() && (rightTiles.contains(i) || leftTiles.contains(i))) {
 						if(moveList2.size() == 4) {
-							moveList2.remove(3);
-							moveList2.remove(2);
-						}
-					}else if(tile[i].getTilePiece().getIsKing() && rightTiles.contains(i)) {
-						if(moveList2.size() == 4) {
-							moveList2.remove(0);
-							moveList2.remove(0);
+							System.out.println("righttile");
+							if(j == 1) {
+								moveList2.remove(0);
+								moveList2.remove(0);
+							}else if(j==0) {
+								moveList2.remove(3);
+								moveList2.remove(2);
+							}else {
+								System.out.println("hep hep j = "+j);
+							}
 						}
 					}
 					
